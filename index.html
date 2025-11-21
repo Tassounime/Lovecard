@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Love Letter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: 'Playfair Display', serif;
+            overflow: hidden;
+        }
+        #envelope {
+            width: 300px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        #envelope:hover {
+            transform: scale(1.05);
+        }
+        #message {
+            font-size: 28px;
+            margin-top: 20px;
+            max-width: 500px;
+            text-align: center;
+            white-space: pre-wrap;
+        }
+        .confetti, .bgHeart {
+            position: absolute;
+            pointer-events: none;
+            user-select: none;
+            animation: floatUp 2s forwards;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-250px) rotate(360deg); opacity: 0; }
+        }
+        .bounce {
+            animation: bounce 0.3s ease forwards;
+        }
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <img id="envelope" src="letterclosed.png">
+    <div id="message"></div>
+
+    <audio id="clickSound" src="click.mp3"></audio>
+    <audio id="music" src="music.mp3"></audio>
+
+    <script>
+        const envelope = document.getElementById('envelope');
+        const messageDiv = document.getElementById('message');
+        const clickSound = document.getElementById('clickSound');
+        const music = document.getElementById('music');
+
+        const MESSAGE = "Bliss, I know school has been stressful lately. I just want you to know I’m always here for you, cheering you on. You mean so much to me, and I’ll always support you <3";
+
+        function typeMessage(text, element, delay = 50) {
+            element.innerHTML = "";
+            let i = 0;
+            const interval = setInterval(() => {
+                element.innerHTML += text[i];
+                i++;
+                if (i >= text.length) clearInterval(interval);
+            }, delay);
+        }
+
+        function createConfetti(x, y) {
+            const confetti = document.createElement('div');
+            const colors = ['❤️','💖','💜','💛','💚','💙'];
+            confetti.classList.add('confetti');
+            confetti.style.left = x + 'px';
+            confetti.style.top = y + 'px';
+            confetti.style.fontSize = (Math.random() * 20 + 20) + 'px';
+            confetti.style.animationDuration = (Math.random() * 1 + 1.5) + 's';
+            confetti.innerHTML = colors[Math.floor(Math.random() * colors.length)];
+            document.body.appendChild(confetti);
+            setTimeout(() => confetti.remove(), 2000);
+        }
+
+        function createBackgroundHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('bgHeart');
+            heart.style.left = Math.random() * window.innerWidth + 'px';
+            heart.style.top = window.innerHeight + 'px';
+            heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            const colors = ['❤️','💖']; // pink and white only
+            heart.innerHTML = colors[Math.floor(Math.random() * colors.length)];
+            heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 5000);
+        }
+
+        setInterval(createBackgroundHeart, 800);
+
+        envelope.addEventListener('click', () => {
+            envelope.classList.add('bounce');
+            setTimeout(() => envelope.classList.remove('bounce'), 300);
+
+            envelope.src = "letteropened.png";
+            clickSound.currentTime = 0;
+            clickSound.play();
+            music.currentTime = 0;
+            music.volume = 0.15; // music at 15%
+            music.play();
+            typeMessage(MESSAGE, messageDiv);
+
+            const rect = envelope.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            for(let i=0; i<20; i++){
+                createConfetti(x + Math.random()*60 - 30, y + Math.random()*60 - 30);
+            }
+        });
+    </script>
+</body>
+</html>
+
